@@ -1,0 +1,41 @@
+{
+  "name": "@chronocide/robots-txt",
+  "description": "Tiny robots.txt parser",
+  "version": "0.0.1",
+  "type": "module",
+  "types": "dist/robots-txt.d.ts",
+  "exports": {
+    ".": "./dist/robots-txt.js"
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "engines": {
+    "node": ">=24.11.1"
+  },
+  "author": "Chronocide",
+  "license": "AGPL-3.0-only",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chronoDave/robotstxt.git"
+  },
+  "scripts": {
+    "test": "node --test src/**/*.spec.ts && tsc --noEmit",
+    "build": "rollup -c",
+    "preversion": "npm run test",
+    "version": "npm run build && git add -A dist",
+    "postversion": "git push && git push --tags"
+  },
+  "optionalDependencies": {
+    "@chronocide/eslint-config": "github:chronoDave/eslint-config",
+    "eslint": "^9.28.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.6",
+    "esbuild": "^0.27.2",
+    "rollup": "^4.55.1",
+    "rollup-plugin-dts": "^6.3.0",
+    "rollup-plugin-esbuild": "^6.2.1",
+    "typescript": "^5.9.3"
+  }
+}

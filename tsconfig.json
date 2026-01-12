@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "lib": ["ESNext"],
+    "module": "Node16",
+    "moduleResolution": "node16",
+    "allowImportingTsExtensions": true,
+
+    "strict": true,
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+
+    "noEmit": true,
+    "outDir": "build"
+  },
+  "include": [
+    "src",
+    "eslint.config.js",
+    "rollup.config.js"
+  ],
+}
