@@ -3,7 +3,7 @@ import path from 'path';
 import esbuild from 'rollup-plugin-esbuild';
 import dts from 'rollup-plugin-dts';
 
-const input = 'src/robots-txt.ts';
+const input = 'src/index.ts';
 const outdir = path.join(process.cwd(), 'dist');
 const output = type => `${outdir}/robots-txt.${type}`;
 
