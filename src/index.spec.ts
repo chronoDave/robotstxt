@@ -60,6 +60,9 @@ test('[robots] ID_LineSyntax_Groups', () => {
     '',
     'User-agent: FooBot',
     'Allow: /z/',
+    'Disallow: /',
+    '',
+    'User-Agent: *',
     'Disallow: /'
   ));
 
@@ -74,6 +77,8 @@ test('[robots] ID_LineSyntax_Groups', () => {
   assert.ok(!allowed('FooBot')('/foo/bar/'));
   assert.ok(!allowed('BarBot')('/foo/bar/'));
   assert.ok(!allowed('BazBot')('/foo/bar/'));
+
+  assert.ok(!allowed('QuxBot')('/foo/bar/'));
 });
 
 /**

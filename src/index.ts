@@ -7,12 +7,8 @@ export default (txt: string) => {
     (url: string): boolean => {
       const filtered = rules
         .filter(rule =>
-          rule.ua === '*' ||
-          // eslint-disable-next-line @stylistic/ts/no-extra-parens
-          (
-            ua !== '' &&
-            rule.ua.toLocaleLowerCase().includes(ua.toLocaleLowerCase())
-          )
+          ua !== '' &&
+          rule.ua.toLocaleLowerCase().includes(ua.toLocaleLowerCase())
         )
         .sort((a, b) => {
           if (a.pattern.length === b.pattern.length) {
@@ -25,18 +21,16 @@ export default (txt: string) => {
         });
 
       for (const rule of filtered) {
-        const pattern = rule.pattern
-          .replaceAll('/', '\\/')
-          .replaceAll('?', '\\?')
-          .replaceAll('.', '\\.');
-
-        if (new RegExp(pattern).test(url)) {
+        if (new RegExp(rule.pattern).test(url)) {
           if (rule.type === 'allow') return true;
           // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           if (rule.type === 'disallow') return false;
         }
       }
 
-      return true;
+      if (filtered.length > 0) return true;
+      return rules
+        .filter(rule => rule.ua === '*' && rule.type === 'disallow')
+        .every(rule => !new RegExp(rule.pattern).test(url));
     };
 };

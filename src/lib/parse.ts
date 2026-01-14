@@ -24,7 +24,7 @@ export default (x: string): Rule[] => {
 
     const action = match[1].toLowerCase();
 
-    if (action === 'user-agent' && /^[a-zA-Z-_]+$/.test(match[2])) {
+    if (action === 'user-agent' && /^([a-zA-Z-_]+|\*)$/.test(match[2])) {
       /**
        * user-agent: a
        * disallow: /
@@ -40,7 +40,15 @@ export default (x: string): Rule[] => {
       open = true;
 
       uas.forEach(ua => {
-        const rule: Rule = { ua, type: action, pattern: encodeURI(match[2]).replaceAll('%25', '%') };
+        const rule: Rule = {
+          ua,
+          type: action,
+          pattern: encodeURI(match[2])
+            .replaceAll('%25', '%')
+            .replaceAll('/', '\\/')
+            .replaceAll('?', '\\?')
+            .replaceAll('.', '\\.')
+        };
 
         if (rules.some(x =>
           x.ua === rule.ua &&

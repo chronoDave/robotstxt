@@ -69,6 +69,7 @@ test('[parse] removes duplicate statements', () => {
 
 test('[parse] ignores invalid user agents', () => {
   const rules = parse(txt(
+    'user-agent: *',
     'user-agent: A',
     'user-agent: A-B',
     'user-agent: A_B',
@@ -81,8 +82,8 @@ test('[parse] ignores invalid user agents', () => {
     'disallow: /'
   ));
 
-  assert.equal(rules.length, 3);
-  assert.equal(rules[0].ua, 'A');
+  assert.equal(rules.length, 4);
+  assert.equal(rules[0].ua, '*');
 });
 
 test('[parse] encodes patterns', () => {
@@ -93,5 +94,5 @@ test('[parse] encodes patterns', () => {
   ));
 
   assert.equal(rules.length, 1);
-  assert.equal(rules[0].pattern, '/%E3%83%84');
+  assert.equal(rules[0].pattern, '\\/%E3%83%84');
 });
