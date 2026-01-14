@@ -17,7 +17,7 @@ var parse = (x) => {
         const rule = {
           ua,
           type: action,
-          pattern: encodeURI(match[2]).replaceAll("%25", "%").replaceAll("/", "\\/").replaceAll("?", "\\?").replaceAll(".", "\\.")
+          pattern: encodeURI(match[2]).replaceAll("%25", "%").replaceAll(/[\/\?\.]/g, "\\$&")
         };
         if (rules.some(
           (x2) => x2.ua === rule.ua && x2.type === rule.type && x2.pattern === rule.pattern
