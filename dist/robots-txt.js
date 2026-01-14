@@ -6,7 +6,7 @@ var parse = (x) => {
     const match = /([^:]+)\s*:\s*(.*)/.exec(line);
     if (!match) return;
     const action = match[1].toLowerCase();
-    if (action === "user-agent" && /^[a-zA-Z-_]+$/.test(match[2])) {
+    if (action === "user-agent" && /^([a-zA-Z-_]+|\*)$/.test(match[2])) {
       if (open) uas.clear();
       open = false;
       uas.add(match[2]);
@@ -14,7 +14,11 @@ var parse = (x) => {
     if (action === "allow" || action === "disallow") {
       open = true;
       uas.forEach((ua) => {
-        const rule = { ua, type: action, pattern: encodeURI(match[2]).replaceAll("%25", "%") };
+        const rule = {
+          ua,
+          type: action,
+          pattern: encodeURI(match[2]).replaceAll("%25", "%").replaceAll("/", "\\/").replaceAll("?", "\\?").replaceAll(".", "\\.")
+        };
         if (rules.some(
           (x2) => x2.ua === rule.ua && x2.type === rule.type && x2.pattern === rule.pattern
         )) return;
@@ -29,8 +33,7 @@ var index = (txt) => {
   const rules = parse(txt);
   return (ua) => (url) => {
     const filtered = rules.filter(
-      (rule) => rule.ua === "*" || // eslint-disable-next-line @stylistic/ts/no-extra-parens
-      ua !== "" && rule.ua.toLocaleLowerCase().includes(ua.toLocaleLowerCase())
+      (rule) => ua !== "" && rule.ua.toLocaleLowerCase().includes(ua.toLocaleLowerCase())
     ).sort((a, b) => {
       if (a.pattern.length === b.pattern.length) {
         if (a.type === "allow") return -1;
@@ -40,13 +43,13 @@ var index = (txt) => {
       return b.pattern.length - a.pattern.length;
     });
     for (const rule of filtered) {
-      const pattern = rule.pattern.replaceAll("/", "\\/").replaceAll("?", "\\?").replaceAll(".", "\\.");
-      if (new RegExp(pattern).test(url)) {
+      if (new RegExp(rule.pattern).test(url)) {
         if (rule.type === "allow") return true;
         if (rule.type === "disallow") return false;
       }
     }
-    return true;
+    if (filtered.length > 0) return true;
+    return rules.filter((rule) => rule.ua === "*" && rule.type === "disallow").every((rule) => !new RegExp(rule.pattern).test(url));
   };
 };
 
