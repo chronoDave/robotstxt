@@ -1,7 +1,7 @@
 {
   "name": "@chronocide/robots-txt",
   "description": "Tiny robots.txt parser",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "type": "module",
   "types": "dist/robots-txt.d.ts",
   "exports": {

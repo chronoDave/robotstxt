@@ -17,7 +17,7 @@ var parse = (x) => {
         const rule = {
           ua,
           type: action,
-          pattern: encodeURI(match[2]).replaceAll("%25", "%").replaceAll(/[\/\?\.]/g, "\\$&")
+          pattern: encodeURI(match[2]).replaceAll("%25", "%").replaceAll(/[\/\?\.]/g, "\\$&").replaceAll("*", ".*")
         };
         if (rules.some(
           (x2) => x2.ua === rule.ua && x2.type === rule.type && x2.pattern === rule.pattern
@@ -31,25 +31,32 @@ var parse = (x) => {
 
 var index = (txt) => {
   const rules = parse(txt);
+  const filter = (predicate) => rules.filter(predicate).sort((a, b) => {
+    if (a.pattern.length === b.pattern.length) {
+      if (a.type === "allow") return -1;
+      if (b.type === "allow") return 1;
+      return 0;
+    }
+    return b.pattern.length - a.pattern.length;
+  });
   return (ua) => (url) => {
-    const filtered = rules.filter(
+    const specific = filter(
       (rule) => ua !== "" && rule.ua.toLocaleLowerCase().includes(ua.toLocaleLowerCase())
-    ).sort((a, b) => {
-      if (a.pattern.length === b.pattern.length) {
-        if (a.type === "allow") return -1;
-        if (b.type === "allow") return 1;
-        return 0;
-      }
-      return b.pattern.length - a.pattern.length;
-    });
-    for (const rule of filtered) {
+    );
+    for (const rule of specific) {
       if (new RegExp(rule.pattern).test(url)) {
         if (rule.type === "allow") return true;
         if (rule.type === "disallow") return false;
       }
     }
-    if (filtered.length > 0) return true;
-    return rules.filter((rule) => rule.ua === "*" && rule.type === "disallow").every((rule) => !new RegExp(rule.pattern).test(url));
+    if (specific.length > 0) return true;
+    for (const rule of filter((rule2) => rule2.ua === "*")) {
+      if (new RegExp(rule.pattern).test(url)) {
+        if (rule.type === "allow") return true;
+        if (rule.type === "disallow") return false;
+      }
+    }
+    return true;
   };
 };
 
