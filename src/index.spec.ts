@@ -295,11 +295,17 @@ test('[robots] ID_LongestMatch', async t => {
       'User-agent: *',
       'Disallow: /x/',
       'User-agent: FooBot',
-      'Disallow: /y/'
+      'Disallow: /y/',
+      'User-agent: *',
+      'Disallow: *.*',
+      'Allow: *.php'
     ));
 
     assert.ok(allowed('FooBot')('/x/page')); // Matches, as `Disallow: /y/` is more specific
     assert.ok(!allowed('FooBot')('/y/page'));
+    assert.ok(allowed('BarBot')('index.php'));
+    assert.ok(!allowed('BarBot')('index.pdf'));
+    assert.ok(allowed('FooBot')('index.pdf')); // FooBot has block, * does not get reached
   });
 
   /** In case of equivalent disallow and allow patterns for the same user-agent, allow is used. */

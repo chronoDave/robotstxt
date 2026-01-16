@@ -46,6 +46,7 @@ export default (x: string): Rule[] => {
           pattern: encodeURI(match[2])
             .replaceAll('%25', '%')
             .replaceAll(/[\/\?\.]/g, '\\$&')
+            .replaceAll('*', '.*')
         };
 
         if (rules.some(x =>
